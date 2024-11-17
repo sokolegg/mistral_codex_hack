@@ -10,7 +10,7 @@ lora:
   rank: 64
 
 # optim
-seq_len: 32768
+seq_len: 16384
 batch_size: 1
 max_steps: 300
 optim:
