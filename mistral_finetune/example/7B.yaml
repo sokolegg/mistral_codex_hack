@@ -2,8 +2,8 @@
 data:
   instruct_data: ""  # Fill
 data:
-  instruct_data: "/home/jovyan/mistral_codex_hack/data/ultrachat_chunk_train.jsonl"
-  eval_instruct_data: "/home/jovyan/mistral_codex_hack/data/ultrachat_chunk_eval.jsonl"
+  instruct_data: "/home/jovyan/mistral_codex_hack/data/train.jsonl"
+  eval_instruct_data: "/home/jovyan/mistral_codex_hack/data/test.jsonl"
 # model
 model_id_or_path: "/home/jovyan/home/jovyan/mistral_models/nemo"  # Change to downloaded path
 lora:
