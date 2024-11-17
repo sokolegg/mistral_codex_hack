@@ -53,69 +53,18 @@ mistakes = [
     # "Missing required signatures or authorization.",
 ]
 
-# def invoke(model_name: str, template: str, mistakes: List[str]) -> Dict[str, Any]:
-#     mistakes_str = "\n".join(mistakes)
-#     chat_response = client.chat.complete(
-#         model=model_name,
-#         messages=[
-#             {
-#                 "role": "system",
-#                 "content": f"""
-#                 You are a perfect lawyer. You can create the amazing and clean document.
-#
-#                 You must follow next instructions:
-#                 1. read a template
-#                 2. imagine the information that you can paste in the gaps
-#                 3. imagine additional information and extend the current template.
-#                 Write a document after <document placeholder> placeholder
-#                 4. make mistakes in the document based on the following list:
-#                 Mistakes:
-#                 {mistakes_str}
-#                 5. after <mistakes placeholder> write explanation for mistakes that you did.
-#
-#                 Dont repeat mistakes. You should explain it.
-#                 Dont return a template in the response.
-#                 Do not offer solutions for these mistakes.
-#
-#                 Template:
-#                 {template}
-#                 """,
-#             },
-#             {
-#                 "role": "user",
-#                 "content": f"""
-#                 <document placeholder>
-#
-#                 <mistakes placeholder>
-#                 """,
-#             },
-#         ]
-#     )
-#     response = chat_response.choices[0].message.content
-#     try:
-#         mistake_pos_ = list(re.finditer("<mistakes placeholder>", response))[0].span()[-1]
-#         obj = [
-#             {
-#                 "role": "user",
-#                 "content": (
-#                     response[:mistake_pos_]
-#                     .replace("<document placeholder>", "")
-#                     .replace('<mistakes placeholder>', '')
-#                 ),
-#             },
-#             {
-#                 "role": "assistant",
-#                 "content": response[mistake_pos_:],
-#             }
-#         ]
-#         return {"obj": obj, "mistakes": mistakes}
-#     except Exception as ex:
-#         print(ex)
-
-
-def invoke(client, model_name: str, template: str, mistakes: List[str]) -> Dict[
+def invoke(
+        client, model_name: str,
+        template: str,
+        mistakes: List[str],
+        names,
+        addresses,
+) -> Dict[
     str, Any]:
     mistakes_str = "\n".join(mistakes)
+    names_str = "\n".join(names)
+    addresses_str = "\n".join(addresses)
+
     chat_response = client.chat.complete(
         model=model_name,
         messages=[
@@ -133,7 +82,17 @@ def invoke(client, model_name: str, template: str, mistakes: List[str]) -> Dict[
                 You must create a document using a template
                 Template:
                 {template}
+                
+                for fake name Use these names:
+                {names_str}
+                for fake addresses use these addresses:
+                {addresses_str}
 
+                """,
+            },
+            {
+                "role": "user",
+                "content": f"""
                 You must make the following mistakes in this text. 
                 Mistakes:
                 {mistakes_str}
@@ -152,11 +111,7 @@ def invoke(client, model_name: str, template: str, mistakes: List[str]) -> Dict[
                 Dont repeat mistakes. You should explain it.
                 Dont return a template in the response.
                 Do not offer solutions for these mistakes.
-                """,
-            },
-            {
-                "role": "user",
-                "content": f"""
+                
                 <document placeholder>
 
                 <mistakes placeholder>
@@ -187,12 +142,91 @@ def invoke(client, model_name: str, template: str, mistakes: List[str]) -> Dict[
         print(ex)
 
 
+# def invoke(client, model_name: str, template: str, mistakes: List[str]) -> Dict[
+#     str, Any]:
+#     mistakes_str = "\n".join(mistakes)
+#     chat_response = client.chat.complete(
+#         model=model_name,
+#         messages=[
+#             {
+#                 "role": "system",
+#                 "content": f"""
+#                 You are a lawyer with extensive experience.
+#                 You have worked with various documents. You have resolved many controversial issues in your career.
+#                 Now you must examine students who are studying at the Faculty of Law.
+#
+#                 You MUST create different names.
+#                 You MUST create Different addresses.
+#                 You MUST create Different companies.
+#
+#                 You must create a document using a template
+#                 Template:
+#                 {template}
+#
+#                 You must make the following mistakes in this text.
+#                 Mistakes:
+#                 {mistakes_str}
+#
+#                 You must follow next instructions:
+#                 1. read a template
+#                 2. imagine the information that you can paste in the gaps
+#                 3. imagine additional information and extend the current template.
+#                 Write a document after <document placeholder> placeholder
+#                 4. make mistakes in the document based on the following list:
+#                 Mistakes:
+#                 {mistakes_str}
+#                 5. after <mistakes placeholder> write what mistakes you made and how students can fix it.
+#
+#                 Dont write words about students.
+#                 Dont repeat mistakes. You should explain it.
+#                 Dont return a template in the response.
+#                 Do not offer solutions for these mistakes.
+#                 """,
+#             },
+#             {
+#                 "role": "user",
+#                 "content": f"""
+#                 <document placeholder>
+#
+#                 <mistakes placeholder>
+#                 """,
+#             },
+#         ]
+#     )
+#     response = chat_response.choices[0].message.content
+#     try:
+#         mistake_pos_ = \
+#         list(re.finditer("<mistakes placeholder>", response))[0].span()[-1]
+#         obj = [
+#             {
+#                 "role": "user",
+#                 "content": (
+#                     response[:mistake_pos_]
+#                     .replace("<document placeholder>", "")
+#                     .replace('<mistakes placeholder>', '')
+#                 ),
+#             },
+#             {
+#                 "role": "assistant",
+#                 "content": response[mistake_pos_:],
+#             }
+#         ]
+#         return {"obj": obj, "mistakes": mistakes}
+#     except Exception as ex:
+#         print(ex)
+
+
 import click
 
 @click.command()
 @click.option('--api-key', default=str)
 def run(api_key: str):
     for i in tqdm.tqdm(range(250)):
+        from faker import Faker
+        fake = Faker()
+        names = [fake.name() for _ in range(10)]
+        addresses = [fake.address() for _ in range(10)]
+
         client = Mistral(api_key=api_key)
         with open("./data/docs_with_template.json", "r") as file:
             docs_with_template = json.load(file)
@@ -207,9 +241,11 @@ def run(api_key: str):
             "mistral-large-latest",
             docs_with_template[ix]["doc_template"],
             rnd_mistakes,
+            names,
+            addresses,
         )
 
-        id = "".join(map(str, np.random.choice(range(100), size=15, replace=True)))
+        id = "AA_" + "".join(map(str, np.random.choice(range(100), size=15, replace=True)))
         with open(f"./data/{id}.json", "w") as file:
             json.dump(incorrect_doc, file, indent=4)
 

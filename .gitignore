@@ -5,6 +5,7 @@ __pycache__/
 data/
 .idea/
 .DS_Store
+result/*
 
 # C extensions
 *.so
