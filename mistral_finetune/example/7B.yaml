@@ -1,9 +1,7 @@
 # data
 data:
-  instruct_data: ""  # Fill
-data:
-  instruct_data: "/home/jovyan/mistral_codex_hack/data/train.jsonl"
-  eval_instruct_data: "/home/jovyan/mistral_codex_hack/data/test.jsonl"
+  instruct_data: "/home/jovyan/mistral_codex_hack/data/train_data.jsonl"
+  eval_instruct_data: "/home/jovyan/mistral_codex_hack/data/eval_data.jsonl"
 # model
 model_id_or_path: "/home/jovyan/home/jovyan/mistral_models/nemo"  # Change to downloaded path
 lora:
@@ -12,7 +10,7 @@ lora:
 # optim
 seq_len: 16384
 batch_size: 1
-max_steps: 110
+max_steps: 350
 optim:
   lr: 6.e-5
   weight_decay: 0.1
@@ -21,7 +19,7 @@ optim:
 # other
 seed: 0
 log_freq: 1
-eval_freq: 100
+eval_freq: 50
 no_eval: False
 ckpt_freq: 100
 
