@@ -5,12 +5,12 @@ data:
 # model
 model_id_or_path: "/home/jovyan/home/jovyan/mistral_models/nemo"  # Change to downloaded path
 lora:
-  rank: 64
+  rank: 32
 
 # optim
 seq_len: 16384
 batch_size: 1
-max_steps: 350
+max_steps: 1000
 optim:
   lr: 6.e-5
   weight_decay: 0.1
