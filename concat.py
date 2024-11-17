@@ -28,10 +28,10 @@ def concat_data(eval_ratio: float):
     train_data =  data[:train_N]
     eval_data = data[train_N:]
 
-    with open("./result/train_data.json", "w") as f:
+    with open("./result/train_data.jsonl", "w") as f:
         writer = jsonlines.Writer(f)
         writer.write_all(train_data)
-    with open("./result/eval_data.json", "w") as f:
+    with open("./result/eval_data.jsonl", "w") as f:
         writer = jsonlines.Writer(f)
         writer.write_all(eval_data)
 

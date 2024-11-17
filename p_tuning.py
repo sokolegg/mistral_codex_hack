@@ -22,9 +22,15 @@ for param in model.parameters():
 
 optimizer = AdamW([prompt_embeddings], lr=5e-4)
 
-dataset = load_dataset("ag_news")
+dataset = load_dataset(
+    "json",
+    data_files={
+        "train": "/home/jovyan/mistral_codex_hack/data/train_data.jsonl",
+        "validate": "/home/jovyan/mistral_codex_hack/data/eval_data.jsonl"
+    }
+)
 train_data = dataset['train']
-test_data = dataset['test']
+test_data = dataset['validate']
 num_epochs = 3
 
 
