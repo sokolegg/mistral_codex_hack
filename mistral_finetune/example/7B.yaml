@@ -12,7 +12,7 @@ lora:
 # optim
 seq_len: 16384
 batch_size: 1
-max_steps: 300
+max_steps: 110
 optim:
   lr: 6.e-5
   weight_decay: 0.1
